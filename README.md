@@ -1,6 +1,6 @@
 # GoodTube Embed Userscript
 
-Script Tampermonkey untuk menghilangkan iklan, Shorts, dan elemen mengganggu lainnya di YouTube.
+Script Tampermonkey yang bertujuan membantu menghilangkan iklan dan beberapa elemen mengganggu lainnya di YouTube. **Catatan:** Karena perubahan pada struktur YouTube, menghilangkan Shorts sepenuhnya mungkin tidak selalu efektif. Anda mungkin perlu memeriksa pembaruan script secara berkala.
 
 ### Instalasi
 
