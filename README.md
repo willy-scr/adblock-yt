@@ -5,7 +5,7 @@ Script Tampermonkey untuk menghilangkan iklan, Shorts, dan elemen mengganggu lai
 ### Instalasi
 
 1.  Pasang pengelola userscript seperti [Tampermonkey](https://www.tampermonkey.net/).
-2.  Kunjungi tautan script ini dan pasang: `https://github.com/goodtube4u/goodtube/raw/refs/heads/main/beta/goodtube-embed.user.js`
+2.  Kunjungi tautan script ini dan pasang: `https://github.com/willy-scr/adblock-yt/adblock%20yt.js`
 
 ### Penggunaan
 
