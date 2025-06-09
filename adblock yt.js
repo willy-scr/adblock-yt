@@ -146,11 +146,11 @@
 	}
 
 	// Hide the Youtube player
-	function goodTube_helper_hideYoutubePlayer(element) {
-		// Skip for shorts pages
-		if (goodTube_helper_isShorts()) {
-			return;
-		}
+        function goodTube_helper_hideYoutubePlayer(element) {
+                // Skip for shorts pages
+                if (goodTube_helper_isShorts()) {
+                        return;
+                }
 		
 		// Add a wrapping div to help avoid detection
 		if (!element.closest('.goodTube_hiddenPlayer')) {
@@ -159,13 +159,26 @@
 			wrapper.classList.add('goodTube_hiddenPlayer');
 			parent.replaceChild(wrapper, element);
 			wrapper.appendChild(element);
-		}
-	}
+                }
+        }
 
-	// Check if we're in shorts page
-	function goodTube_helper_isShorts() {
-		return window.location.href.indexOf('/shorts/') !== -1;
-	}
+        // Check if we're in shorts page
+        function goodTube_helper_isShorts() {
+                return window.location.href.indexOf('/shorts/') !== -1;
+        }
+
+        // Determine if an element belongs to YouTube's core UI (like comment panels)
+        function goodTube_helper_isUIElement(element) {
+                if (!element || typeof element.closest !== 'function') {
+                        return false;
+                }
+
+                return element.closest(
+                        '.ytd-watch-flexy, ytd-engagement-panel-section-list-renderer,' +
+                        ' ytm-engagement-panel-section-list-renderer, tp-yt-iron-overlay-backdrop,' +
+                        ' ytd-comment-renderer, ytd-comments'
+                ) !== null;
+        }
 
 
 	/* Global variables
@@ -1357,50 +1370,55 @@
 	/* Core functions
 	------------------------------------------------------------------------------------------ */
 	// Init
-	function goodTube_init() {
-		/* Disable Youtube
-		-------------------------------------------------- */
-		// Add CSS to hide ads only, not shorts
-		goodTube_youtube_hideAdsShortsEtc();
-		
-		// For non-shorts pages, apply all modifications
-		if (!goodTube_helper_isShorts()) {
-			// Mute, pause and skip ads (except shorts)
-			goodTube_youtube_mutePauseSkipAds();
-			setInterval(goodTube_youtube_mutePauseSkipAds, 1);
+        function goodTube_init() {
+                /* Disable Youtube
+                -------------------------------------------------- */
+                // Add CSS to hide ads only, not shorts
+                goodTube_youtube_hideAdsShortsEtc();
 
-			// Add CSS classes to hide elements (without Youtube knowing)
-			goodTube_helper_showHide_init();
+                // If we're on a Shorts page, keep everything else untouched
+                if (goodTube_helper_isShorts()) {
+                        // Basic usage stats and UI restoration only
+                        goodTube_stats_user();
+                        goodTube_restore_shorts_ui();
+                        return;
+                }
 
-			// Hide the youtube players (except shorts)
-			goodTube_youtube_hidePlayers();
-			setInterval(goodTube_youtube_hidePlayers, 100);
+                // Mute, pause and skip ads
+                goodTube_youtube_mutePauseSkipAds();
+                setInterval(goodTube_youtube_mutePauseSkipAds, 1);
 
-			// Turn off autoplay (except shorts)
-			setInterval(goodTube_youtube_turnOffAutoplay, 1000);
+                // Add CSS classes to hide elements (without Youtube knowing)
+                goodTube_helper_showHide_init();
 
-			/* Load GoodTube
-			-------------------------------------------------- */
-			// Init our player (after DOM is loaded) - except on shorts
-			document.addEventListener("DOMContentLoaded", goodTube_player_init);
-			
-			// Also check if the DOM is already loaded, as if it is, the above event listener will not trigger.
-			if (document.readyState === "interactive" || document.readyState === "complete") {
-				goodTube_player_init();
-			}
-		}
+                // Hide the youtube players
+                goodTube_youtube_hidePlayers();
+                setInterval(goodTube_youtube_hidePlayers, 100);
 
-		// Usage stats (for all pages)
-		goodTube_stats_user();
+                // Turn off autoplay
+                setInterval(goodTube_youtube_turnOffAutoplay, 1000);
 
-		// Keyboard shortcuts (desktop only, for all pages)
-		if (!goodTube_mobile) {
-			goodTube_shortcuts_init();
-		}
+                /* Load GoodTube
+                -------------------------------------------------- */
+                // Init our player (after DOM is loaded)
+                document.addEventListener("DOMContentLoaded", goodTube_player_init);
 
-		// Listen for messages from the iframe (for all pages)
-		window.addEventListener('message', goodTube_receiveMessage);
-	}
+                // Also check if the DOM is already loaded, as if it is, the above event listener will not trigger.
+                if (document.readyState === "interactive" || document.readyState === "complete") {
+                        goodTube_player_init();
+                }
+
+                // Usage stats
+                goodTube_stats_user();
+
+                // Keyboard shortcuts (desktop only)
+                if (!goodTube_mobile) {
+                        goodTube_shortcuts_init();
+                }
+
+                // Listen for messages from the iframe
+                window.addEventListener('message', goodTube_receiveMessage);
+        }
 
 	// Listen for messages from the iframe
 	function goodTube_receiveMessage(event) {
@@ -2104,10 +2122,9 @@
 	/* Start GoodTube
 	------------------------------------------------------------------------------------------ */
 	// Youtube page
-	if (window.top === window.self) {
-		goodTube_init();
-		goodTube_restore_shorts_ui();
-	}
+        if (window.top === window.self) {
+                goodTube_init();
+        }
 	// Iframe embed
 	else if (window.top.location.href.indexOf('youtube.com') !== -1) {
 		goodTube_iframe_init();
